@@ -6,6 +6,11 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Root route to check if server is running
+app.get('/', (req, res) => {
+    res.send('BFHL Backend is Running');
+});
+
 // GET /bfhl - Returns operation_code: 1
 app.get('/bfhl', (req, res) => {
     res.status(200).json({ operation_code: 1 });
@@ -22,7 +27,7 @@ app.post('/bfhl', (req, res) => {
         // Extract numbers and alphabets
         let numbers = [], alphabets = [];
         data.forEach(item => {
-            if (!isNaN(item)) {
+            if (!isNaN(item) && item !== "") {
                 numbers.push(item);
             } else if (typeof item === 'string' && item.length === 1 && /^[a-zA-Z]$/.test(item)) {
                 alphabets.push(item);
@@ -30,9 +35,11 @@ app.post('/bfhl', (req, res) => {
         });
 
         // Find highest alphabet (case insensitive)
-        let highest_alphabet = alphabets.length > 0 ? [alphabets.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' })).pop()] : [];
+        let highest_alphabet = alphabets.length > 0 
+            ? [alphabets.sort((a, b) => a.localeCompare(b, 'en', { sensitivity: 'base' })).pop()] 
+            : [];
 
-        res.json({
+        res.status(200).json({
             is_success: true,
             user_id: "your_name_ddmmyyyy",
             email: "your_email@example.com",
